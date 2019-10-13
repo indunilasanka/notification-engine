@@ -115,7 +115,7 @@ Resources:
                   - Ref: AWS::Region
                   - ":"
                   - Ref: AWS::AccountId
-                  - ":notification-service-${file(./env.yml):${opt:stage}.STAGE}-events"
+                  - ":notification-engine-${file(./env.yml):${opt:stage}.STAGE}-events"
       Queues:
       - Ref: NotificationEventsQueue
 
@@ -130,7 +130,7 @@ Resources:
           - Ref: AWS::Region
           - ":"
           - Ref: AWS::AccountId
-          - ":notification-service-${file(./env.yml):${opt:stage}.STAGE}-events"
+          - ":notification-engine-${file(./env.yml):${opt:stage}.STAGE}-events"
       Endpoint: !GetAtt
       - NotificationEventsQueue
       - Arn

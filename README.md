@@ -1,6 +1,6 @@
-# Notification Service
+# Notification Engine
 
-Notification Service @ZippyCrowd 
+Notification Engine
 
 ### Usage
 

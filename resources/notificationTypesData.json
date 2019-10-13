@@ -74,7 +74,7 @@
         "S": "NotifyFacebookFriendJoining"
       },
       "template": {
-        "S": "Your facebook friend {sender} joined ZippyCrowd"
+        "S": "Your facebook friend {sender} joined Our Team"
       }
     },
     {
@@ -85,7 +85,7 @@
         "S": "RecommendNewlyJoinedWhatsappFriend"
       },
       "template": {
-        "S": "Your WhatsApp friend {sender} got your {skill} Recommendation invite and ZippyCrowd. Trust and recommend {sender}?"
+        "S": "Your WhatsApp friend {sender} got your {skill} Recommendation invite. Trust and recommend {sender}?"
       }
     }
   ]

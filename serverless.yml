@@ -1,4 +1,4 @@
-service: notification-service
+service: notification-engine
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
@@ -14,7 +14,7 @@ plugins:
 provider:
   name: aws
   runtime: nodejs10.x
-  project: notification-service
+  project: notification-engine
   stage: ${opt:stage}.STAGE
   region: ${file(./env.yml):${opt:stage}.REGION}
   environment: ${file(./env.yml):${opt:stage}}
