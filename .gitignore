@@ -1,0 +1,7 @@
+/build
+/.project
+/.serverless/
+/node_modules/
+/.idea/
+/lib
+/.webpack/

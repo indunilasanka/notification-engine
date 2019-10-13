@@ -1,0 +1,50 @@
+{
+  "name": "notification-service",
+  "version": "1.1.0",
+  "description": "Notification Service @ZippyCrowd",
+  "main": "handlers/handler.ts",
+  "scripts": {
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "test": "mocha -r ts-node/register tests/**/*.spec.ts",
+    "clean": "rm -Rf build",
+    "ddb:create": "cross-env STAGE=local ts-node ./src/utils/localSetup/createTable.ts",
+    "ddb:insertData": "cross-env STAGE=local ts-node ./src/utils/localSetup/insertSampleData.ts"
+  },
+  "author": "waindunilasanka@gmail.com",
+  "dependencies": {
+    "aws-sdk": "^2.504.0",
+    "lodash": "^4.17.15",
+    "lambda-log": "^2.3.1",
+    "graphql": "^14.5.6",
+    "graphql-tag": "^2.10.1",
+    "aws-appsync": "^2.0.0",
+    "serverless-appsync-plugin": "^1.1.2",
+    "source-map-support": "^0.5.13",
+    "yarn": "^1.17.3"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.31",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.2",
+    "chai": "^4.2.0",
+    "chai-fuzzy": "^1.6.1",
+    "chai-spies": "^1.0.0",
+    "dirty-chai": "^2.0.1",
+    "mocha": "^6.2.0",
+    "mock-aws": "^1.2.3",
+    "nodemon": "^1.19.1",
+    "cross-env": "^6.0.0",
+    "yamljs": "^0.3.0",
+    "serverless-bundle": "^1.2.2",
+    "serverless-offline": "^5.3.3",
+    "serverless-appsync-offline": "^1.3.3",
+    "serverless-plugin-warmup": "^4.7.0-rc.1",
+    "serverless-webpack": "^5.3.1",
+    "sinon": "^7.4.1",
+    "ts-loader": "^6.0.4",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3",
+    "webpack": "^4.39.2"
+  }
+}

@@ -1,0 +1,137 @@
+Resources:
+  NotificationServiceAppSyncRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ${self:custom.appSync.serviceRole}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: "Allow"
+          Principal:
+            Service:
+            - appsync.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+      - PolicyName: ${self:custom.appSync.serviceRole}-policy
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Effect: "Allow"
+            Action: [
+              "dynamodb:*"
+            ]
+            Resource: [
+              "*"
+            ]
+
+  NotificationType:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: ${file(./env.yml):${opt:stage}.NOTIFICATION_TYPE_TABLE}
+
+  Notification:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      - AttributeName: recipient
+        AttributeType: S
+      - AttributeName: createdAt
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: ${file(./env.yml):${opt:stage}.NOTIFICATION_TABLE}
+      GlobalSecondaryIndexes:
+      - IndexName: 'recipient-createdAt-index'
+        KeySchema:
+        - AttributeName: recipient
+          KeyType: HASH
+        - AttributeName: createdAt
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+  NotificationEventsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:service}-${file(./env.yml):${opt:stage}.STAGE}-events-queue
+      DelaySeconds: 0
+      MessageRetentionPeriod: 345600
+      VisibilityTimeout: 60
+      ReceiveMessageWaitTimeSeconds: 1
+      MaximumMessageSize: 262144
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt
+        - NotificationEventsQueueDLQ
+        - Arn
+        maxReceiveCount: 3
+
+  NotificationEventsQueueDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:service}-${file(./env.yml):${opt:stage}.STAGE}-dead-letter-queue
+      MessageRetentionPeriod: 1209600
+
+  NotificationEventsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Sid: "allow-sns-messages"
+          Effect: Allow
+          Principal: "*"
+          Resource: !GetAtt
+          - NotificationEventsQueue
+          - Arn
+          Action: "SQS:SendMessage"
+          Condition:
+            ArnEquals:
+              aws:SourceArn:
+                Fn::Join:
+                - ''
+                - - arn:aws:sns
+                  - ":"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - ":notification-service-${file(./env.yml):${opt:stage}.STAGE}-events"
+      Queues:
+      - Ref: NotificationEventsQueue
+
+  NotificationEventsQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn:
+        Fn::Join:
+        - ''
+        - - arn:aws:sns
+          - ":"
+          - Ref: AWS::Region
+          - ":"
+          - Ref: AWS::AccountId
+          - ":notification-service-${file(./env.yml):${opt:stage}.STAGE}-events"
+      Endpoint: !GetAtt
+      - NotificationEventsQueue
+      - Arn
+      Protocol: sqs

@@ -1,0 +1,93 @@
+{
+  "items": [
+    {
+      "id": {
+        "S": "1000"
+      },
+      "name": {
+        "S": "RecommendedYouForAsk"
+      },
+      "template": {
+        "S": "{sender} recommended you to {ask}"
+      }
+    },
+    {
+      "id": {
+        "S": "1001"
+      },
+      "name": {
+        "S": "RecommendationsForYourAsk"
+      },
+      "template": {
+        "S": "{sender} recommended {recommendedUser} to your {ask}"
+      }
+    },
+    {
+      "id": {
+        "S": "1002"
+      },
+      "name": {
+        "S": "AskForRecommendations"
+      },
+      "template": {
+        "S": "{sender} asking for Recommendations Looking for a good {skill}. Can you help?"
+      }
+    },
+    {
+      "id": {
+        "S": "1003"
+      },
+      "name": {
+        "S": "BoostedYourSkill"
+      },
+      "template": {
+        "S": "{sender} boosts your {skill} skill"
+      }
+    },
+    {
+      "id": {
+        "S": "1004"
+      },
+      "name": {
+        "S": "HelpOnSkillPromotion"
+      },
+      "template": {
+        "S": "{sender} promotes a skill {skill} open to offers anywhere remote... can you help?"
+      }
+    },
+    {
+      "id": {
+        "S": "1005"
+      },
+      "name": {
+        "S": "TrustZippedUser"
+      },
+      "template": {
+        "S": "{sender} zipped you to f1 crowd. Do you trust {sender}?"
+      }
+    },
+    {
+      "id": {
+        "S": "1006"
+      },
+      "name": {
+        "S": "NotifyFacebookFriendJoining"
+      },
+      "template": {
+        "S": "Your facebook friend {sender} joined ZippyCrowd"
+      }
+    },
+    {
+      "id": {
+        "S": "1007"
+      },
+      "name": {
+        "S": "RecommendNewlyJoinedWhatsappFriend"
+      },
+      "template": {
+        "S": "Your WhatsApp friend {sender} got your {skill} Recommendation invite and ZippyCrowd. Trust and recommend {sender}?"
+      }
+    }
+  ]
+}
+

@@ -1,0 +1,149 @@
+service: notification-service
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+package:
+  individually: true
+
+plugins:
+- serverless-webpack
+- serverless-offline
+- serverless-appsync-plugin
+- serverless-appsync-offline
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  project: notification-service
+  stage: ${opt:stage}.STAGE
+  region: ${file(./env.yml):${opt:stage}.REGION}
+  environment: ${file(./env.yml):${opt:stage}}
+  iamRoleStatements: ${file(./resources/serverless.iam.yml):iamRoleStatements}
+  cfLogs: true,
+  tracing:
+    apiGateway: true
+    lambda: true
+
+resources:
+- ${file(./resources/serverless.resources.yml)}
+
+custom:
+  accountId: ${file(./env.yml):${opt:stage}.ACCT_ID}
+  appsync-offline:
+    port: 62222
+    dynamodb:
+      client:
+        endpoint: "http://localhost:8000"
+  appSync:
+    name: ${self:service.name}
+    schema: schema.graphql
+    authenticationType: API_KEY
+    serviceRole: ${self:service.name}-appsync-role
+    dataSources:
+    - type: AMAZON_DYNAMODB
+      name: notificationSource
+      config:
+        tableName: ${self:provider.environment.NOTIFICATION_TABLE}
+
+    - type: AMAZON_DYNAMODB
+      name: notificationTypeSource
+      config:
+        tableName: ${self:provider.environment.NOTIFICATION_TYPE_TABLE}
+
+    - type: AMAZON_DYNAMODB
+      name: userSource
+      config:
+        tableName: ${self:provider.environment.USER_TABLE}
+
+    - type: AMAZON_DYNAMODB
+      name: skillSource
+      config:
+        tableName: ${self:provider.environment.SKILL_TABLE}
+
+    - type: AMAZON_DYNAMODB
+      name: askSource
+      config:
+        tableName: ${self:provider.environment.ASK_TABLE}
+
+    mappingTemplates:
+    - dataSource: notificationTypeSource
+      type: Notification
+      field: notificationType
+      request: "Notification/notificationType/request.vtl"
+      response: "Notification/notificationType/response.vtl"
+
+    - dataSource: userSource
+      type: Notification
+      field: recipient
+      request: "Notification/recipient/request.vtl"
+      response: "Notification/recipient/response.vtl"
+
+    - dataSource: userSource
+      type: Notification
+      field: sender
+      request: "Notification/sender/request.vtl"
+      response: "Notification/sender/response.vtl"
+
+    - dataSource: userSource
+      type: Notification
+      field: recommendedUser
+      request: "Notification/recommendedUser/request.vtl"
+      response: "Notification/recommendedUser/response.vtl"
+
+    - dataSource: askSource
+      type: Notification
+      field: ask
+      request: "Notification/ask/request.vtl"
+      response: "Notification/ask/response.vtl"
+
+    - dataSource: skillSource
+      type: Notification
+      field: skill
+      request: "Notification/skill/request.vtl"
+      response: "Notification/skill/response.vtl"
+
+    - dataSource: notificationSource
+      type: Query
+      field: getNotificationsByRecipient
+      request: "Query/getNotificationsByRecipient/request.vtl"
+      response: "Query/getNotificationsByRecipient/response.vtl"
+
+    - dataSource: notificationSource
+      type: Query
+      field: getNotificationById
+      request: "Query/getNotificationById/request.vtl"
+      response: "Query/getNotificationById/response.vtl"
+
+    - dataSource: notificationSource
+      type: Mutation
+      field: createNotification
+      request: "Mutation/createNotification/request.vtl"
+      response: "Mutation/createNotification/response.vtl"
+
+    - dataSource: notificationSource
+      type: Mutation
+      field: updateNotification
+      request: "Mutation/updateNotification/request.vtl"
+      response: "Mutation/updateNotification/response.vtl"
+
+    - dataSource: notificationSource
+      type: Mutation
+      field: deleteNotification
+      request: "Mutation/deleteNotification/request.vtl"
+      response: "Mutation/deleteNotification/response.vtl"
+
+    - dataSource: notificationSource
+      type: Mutation
+      field: readNotification
+      request: "Mutation/readNotification/request.vtl"
+      response: "Mutation/readNotification/response.vtl"
+
+functions:
+  notifications-handler:
+    handler: handlers/handler.handleNotifications
+    memorySize: 512
+    timeout: 60
+    events:
+    - sqs:
+        arn:aws:sqs:${self:provider.region}:${file(./env.yml):${opt:stage}.ACCT_ID}:${self:service}-${file(./env.yml):${opt:stage}.STAGE}-events-queue
+

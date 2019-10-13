@@ -1,0 +1,63 @@
+type NotificationType {
+    id: ID!
+    name: String
+    template: String
+}
+
+type Ask {
+    id: ID!
+    skill: String!
+    location: String!
+    description: String!
+    findBy: String!
+}
+
+type User {
+    userId: String
+    email: String
+    firstName: String
+    lastName: String
+    profileImageUrl: String
+}
+
+type Skill {
+    id: String!,
+    name: String!
+}
+
+type Notification {
+    id: ID!
+    createdAt: String
+    isDeleted: Boolean
+    isRead: Boolean
+    notificationType: NotificationType
+    recipient: User
+    sender: User
+    recommendedUser: User
+    ask : Ask
+    skill: Skill
+    action: String
+}
+
+type Query {
+    getNotificationsByRecipient(recipient: String!): [Notification]
+    getNotificationById(id: ID!, createdAt: String!): Notification
+}
+
+type Mutation {
+    createNotification(recipient: String!, notificationType: String!, sender: String, recommendedUser: String, ask: String, skill: String, action: String, isRead: Boolean, isDeleted: Boolean): Notification!
+    updateNotification(id:String!, action: String, isRead: Boolean, isDeleted: Boolean): Notification
+    readNotification(id:String!): Notification
+    deleteNotification(id:String!): Notification
+}
+
+type Subscription {
+    createdNotification: Notification @aws_subscribe(mutations: ["createNotification"])
+    createdNotificationByRecipient(recipient: String!): Notification @aws_subscribe(mutations: ["createNotification"])
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}

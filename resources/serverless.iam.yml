@@ -1,0 +1,19 @@
+iamRoleStatements:
+- Effect: Allow
+  Action:
+  - dynamodb:DescribeTable
+  - dynamoDB:Query
+  - dynamoDB:Scan
+  - dynamoDB:GetItem
+  - dynamoDB:PutItem
+  - dynamoDB:UpdateItem
+  - dynamoDB:DeleteItem
+  Resource:
+  - "*"
+- Effect: Allow
+  Action:
+  - sqs:ChangeMessageVisibility
+  - sqs:DeleteMessage
+  - sqs:GetQueueAttributes
+  - sqs:ReceiveMessage
+  Resource: "arn:aws:sqs:${self:provider.region}:${file(./env.yml):${opt:stage}.ACCT_ID}:${self:service}-${file(./env.yml):${opt:stage}.STAGE}-events-queue"
